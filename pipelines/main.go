@@ -1,4 +1,4 @@
-package main
+package pipelines
 
 import "fmt"
 
@@ -8,8 +8,8 @@ type Task struct {
 	Data  int
 }
 
-// creating input channel
-func build(in []int) <-chan Task {
+// Build is needed to create input channel
+func Build(in []int) <-chan Task {
 	out := make(chan Task)
 
 	go func() {
@@ -27,8 +27,8 @@ func makeIndex(id int) int {
 	return id - 10
 }
 
-// pipeline
-func fillIndex(in <-chan Task) <-chan Task {
+// FillIndex is a first pipeline
+func FillIndex(in <-chan Task) <-chan Task {
 	out := make(chan Task)
 
 	go func() {
@@ -42,8 +42,8 @@ func fillIndex(in <-chan Task) <-chan Task {
 	return out
 }
 
-// second pipeline
-func fillData(in <-chan Task) <-chan Task {
+// FillData is a second pipeline
+func FillData(in <-chan Task) <-chan Task {
 	out := make(chan Task)
 
 	go func() {
@@ -59,8 +59,8 @@ func fillData(in <-chan Task) <-chan Task {
 }
 
 func main() {
-	in := build([]int{1, 2, 3})
-	out := fillData(fillIndex(in))
+	in := Build([]int{1, 2, 3})
+	out := FillData(FillIndex(in))
 
 	for task := range out {
 		fmt.Println(task.Id, task.Index, task.Data)
